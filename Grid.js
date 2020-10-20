@@ -1,36 +1,43 @@
 class Grid{
 	constructor(){
 		this.img = false;
-		this.setPos();
-		this.setBlk(25);
 		this.swatch = false;
 		this.__bg = false;
 		this.__fg = false;
 		this.__str = false;
-	}
-	setPos(x,y,w,h){
-		this.x = x || 0;
-		this.y = y || 0;
-		this.w = w || width;
-		this.h = h || height;
-	}
-	setBlk(blk,min){
-		this.blk = blk;
-		this.blk2 = blk/2;
-		this.minBlk = min || blk;
+		this.sw=0;
+		this.sh=0;
+		this.__recursion=false;
 	}
 	setImage(img){
 		this.img = img;
 		this.w = img.width;
 		this.h = img.height;
 	}
-	str(){
-		if(!this.__str){
-			this.__strIndex=0;
-			this.__str = "ABCDEFGHIJLKMNOPRSTUVXWYZ0123456789".split("");
-		}
-		// return random(this.__str);
-		return this.__str[this.__strIndex++ % (this.__str.length-1)]
+	setBlk(blk){
+		this.w = this.w || width;
+		this.h = this.h || height;
+		this.blkWidth = blk || 50;
+		this.blkHeight = blk || 50;
+		this.cols = floor(this.w / this.blkWidth) + 1;
+		this.rows = floor(this.h / this.blkHeight) + 1;
+		this.sw=0;
+		this.sh=0;
+		this.spacing = 0;
+	}
+	setGrid(cols,rows){
+		this.cols = cols || this.cols || 10;
+		this.rows = rows || this.rows || 10;
+		this.spacing = this.spacing || 0;
+		this.w = (this.w || width) - this.spacing;
+		this.h = (this.h || height) - this.spacing;
+		this.sw = (this.spacing / this.cols);
+		this.sh = (this.spacing / this.rows);
+		this.blkWidth = this.w / this.cols - this.sw;
+		this.blkHeight = this.h / this.rows - this.sh;
+	}
+	setRecursion(func){
+		return this.__recursion = func;
 	}
 	bg(){
 		if(!this.__bg){
@@ -40,68 +47,55 @@ class Grid{
 	}
 	fg(){
 		if(!this.__fg){
-			do{
+			this.__fg = random(this.swatch);
+			while( this.__fg == this.__bg ){
 				this.__fg = random(this.swatch);
-			}while( this.__fg == this.__bg)
+			}
 		}
 		return this.__fg
 	}
-	pixel(x,y,w,h){
-		return random([1,0,1,1]);
-		// x = floor(x + w/2);
-		// y = floor(y + h/2);
-		// let px = this.img.get(x,y)[0];
-		// $(px,x,y)
-		// return px < 40;
+	clr(){
+		return random(this.swatch);
 	}
 	render(){
-		this.xi=0;
+		this.x = this.x || 0;
+		this.y = this.y || 0;
+		this.spacing = this.spacing || 0;
+	
 		this.yi=0;
+		this.xi=0;
 		push();
 		translate(this.x,this.y)
-		let w = this.blk;
-		let h = this.blk;
-		for(let x=0;x<this.w;x+=this.blk){
-			for(let y=0;y<this.h;y+=this.blk){
-				if( this.pixel(x,y,w,h) && this.blk > this.minBlk){
-					//Recursion
-					let u = new Grid();
-					u.setPos(x,y,w,h);
-					u.setBlk(w/2,this.minBlk);
-					u.img = this.img;
-					u.__strIndex = this.__strIndex;
-					u.__str = this.__str;
-					// u.__bg = this.__bg;
-					// u.__fg = this.__fg;
-					u.swatch = this.swatch;
-					u.render();
+		let bw = this.blkWidth;
+		let bh = this.blkHeight;
+		let s1 = this.spacing - this.sw;
+		let s2 = this.spacing - this.sh;
+		let w = this.w - this.spacing*2;
+		let h = this.h - this.spacing*2;
+		for(let y=0;y<h;y+=bh){
+			this.xi=0;
+			for(let x=0;x<w;x+=bw){
+				if(this.__recursion&&this.__recursion.apply(this,[this.current])){
+					push()
+					let r = new Grid();
+					Object.assign(r, this);
+					r.x = x+s1;
+					r.y = y+s2;
+					r.w = bw;
+					r.h = bh;
+					r.setBlk((bw*0.5));
+					r.render();
+					pop()
 				}else{
-					this.onRenderItem(x,y,w,h)
+					this.onRenderItem(x+s1,y+s2,bw,bh)
 				}
 				this.xi++;
-				this.yi++;
 			}
+			this.yi++;
 		}
 		pop();
 	}
-	onRenderItem(x,y,w,h){
-		push();
-		fill(this.bg());
-		stroke(255)
-		let r = 5;
-		rect(x,y,w,h,r,r,r,r);
-		noStroke();
-		textFont(font);
-		textSize((w+h)*0.3)
-		textStyle(BOLD);
-		fill(this.fg());
-		textAlign(CENTER, CENTER);
-		text(this.str(),x+w/2,y+h/2.5);
-		// fill(this.fg())
-		// ellipseMode(CENTER);
-		// ellipse(x+w/2,y+h/2,r,r)
-		pop();
-	}
+	onRenderItem(x,y,w,h){}
 }
 
 
