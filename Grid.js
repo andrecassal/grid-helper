@@ -8,6 +8,7 @@ class Grid{
 		this.sw=0;
 		this.sh=0;
 		this.__recursion=false;
+		this.__super=false;
 	}
 	setImage(img){
 		this.img = img;
@@ -79,6 +80,7 @@ class Grid{
 					push()
 					let r = new Grid();
 					Object.assign(r, this);
+					r.__super = this;
 					r.x = x+s1;
 					r.y = y+s2;
 					r.w = bw;
