@@ -42,21 +42,21 @@ class Grid{
 	}
 	bg(){
 		if(!this.__bg){
-			this.__bg = random(this.swatch);
+			this.__bg = this.swatch.random();
 		}
 		return this.__bg;
 	}
 	fg(){
 		if(!this.__fg){
-			this.__fg = random(this.swatch);
+			this.__fg = this.swatch.random();
 			while( this.__fg == this.__bg ){
-				this.__fg = random(this.swatch);
+				this.__fg = this.swatch.random();
 			}
 		}
 		return this.__fg
 	}
 	clr(){
-		return random(this.swatch);
+		return this.swatch.random();
 	}
 	render(){
 		this.x = this.x || 0;
