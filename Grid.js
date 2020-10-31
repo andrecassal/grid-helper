@@ -5,10 +5,10 @@ class Grid{
 		this.__bg = false;
 		this.__fg = false;
 		this.__str = false;
-		this.sw=0;
-		this.sh=0;
 		this.__recursion=false;
 		this.__super=false;
+		this.sw=0;
+		this.sh=0;
 	}
 	setImage(img){
 		this.img = img;
@@ -18,6 +18,7 @@ class Grid{
 	setBlk(blk){
 		this.w = this.w || width;
 		this.h = this.h || height;
+		this.blk = blk || 50;
 		this.blkWidth = blk || 50;
 		this.blkHeight = blk || 50;
 		this.cols = floor(this.w / this.blkWidth) + 1;
@@ -58,7 +59,14 @@ class Grid{
 	clr(){
 		return this.swatch.random();
 	}
+	px(x,y){
+		return this.img.get(x,y)[0];
+	}
 	render(){
+		if(this.onSetup&&!this.__setup){
+			this.onSetup();
+			this.__setup=true;
+		}
 		this.x = this.x || 0;
 		this.y = this.y || 0;
 		this.spacing = this.spacing || 0;
@@ -97,11 +105,7 @@ class Grid{
 		}
 		pop();
 	}
+	onSetup(){}
 	onRenderItem(x,y,w,h){}
 }
-
-
-
-
-
-
+ 
