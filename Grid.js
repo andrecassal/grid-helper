@@ -104,8 +104,18 @@ class Grid{
 			this.yi++;
 		}
 		pop();
+		if(this.onFinish&&!this.__finish){
+			this.onFinish();
+			this.__finish=true;
+		}
 	}
 	onSetup(){}
 	onRenderItem(x,y,w,h){}
+	onFinish(){}
 }
+ 
+ 
+ 
+ 
+ 
  
